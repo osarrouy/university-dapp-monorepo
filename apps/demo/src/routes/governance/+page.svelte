@@ -7,7 +7,6 @@
     waitForTransactionReceipt,
     writeContract,
   } from "@wagmi/core";
-
   import toast from "svelte-french-toast";
 
   const ADDRESS = "0x7Ab0e641ED98A4FCf7c4EF7F61919042DDdc7f1D";
@@ -88,7 +87,6 @@
   const vote = async (id, yes) => {
     console.log("» Voting " + yes + " on proposal " + id + " ...");
     try {
-      proposals[id].hasVoted = true;
       toast.promise(_vote(id, yes), {
         loading: "Confirm transaction in your wallet",
         success: "Vote transmitted to the blockchain",

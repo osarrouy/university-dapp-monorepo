@@ -22,36 +22,10 @@
   onMount(async () => {
     const interval = setInterval(async () => {
       try {
-        // console.log("do");
-        // console.log(wallet);
         if (wallet.isConnected) {
-          console.log("true");
           balance = await getBalance(wallet.config, {
             address: wallet.address,
           });
-
-          console.log("Balance");
-          console.log(balance);
-
-          // const balance = await readContract(wallet.config, {
-          //   address: RMT,
-          //   abi: IERC20_ABI,
-          //   functionName: "balanceOf",
-          //   args: ["0x3c7e48216C74D7818aB1Fd226e56C60C4D659bA6"],
-          // });
-
-          // if (balance >= 1) {
-          //   isExchanged = true;
-          // }
-          // const allowance = await readContract(wallet.config, {
-          //   address: RMT,
-          //   abi: IERC20_ABI,
-          //   functionName: "allowance",
-          //   args: [wallet.address, BROKER],
-          // });
-          // if (allowance == 1) {
-          //   isApproved = true;
-          // }
         }
       } catch (e) {
         console.log(e);
