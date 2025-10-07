@@ -1,164 +1,150 @@
 <script>
-import { Button } from "$lib";
-import { BROKER_ABI, IERC20_ABI } from "$lib/abis";
-import { wallet } from "$lib/wallet.svelte.js";
-import { readContract, waitForTransactionReceipt, writeContract } from "@wagmi/core";
-import { onMount } from "svelte";
+  import { Button } from "$lib";
+  import { BROKER_ABI, IERC20_ABI } from "$lib/abis";
+  import { wallet } from "$lib/wallet.svelte.js";
+  import {
+    getBalance,
+    readContract,
+    waitForTransactionReceipt,
+    writeContract,
+  } from "@wagmi/core";
+  import { onMount } from "svelte";
+  import toast, { Toaster } from "svelte-french-toast";
+  let isApproved = false;
+  let isApproving = false;
+  let isExchanging = false;
+  let isExchanged = false;
+  let balance = 0;
 
-let isApproved = false;
-let isApproving = false;
-let isExchanging = false;
-let isExchanged = false;
+  const RMT = "0xFdbC2C6AfaE0B9648F42a4a5a7E9eD17C9ef857b";
+  const BROKER = "0xCB043f8756b338d4188b196A01fE444cA7a46915";
 
-const RMT = "0xFdbC2C6AfaE0B9648F42a4a5a7E9eD17C9ef857b";
-const BROKER = "0xCB043f8756b338d4188b196A01fE444cA7a46915";
+  onMount(async () => {
+    const interval = setInterval(async () => {
+      try {
+        // console.log("do");
+        // console.log(wallet);
+        if (wallet.isConnected) {
+          console.log("true");
+          balance = await getBalance(wallet.config, {
+            address: wallet.address,
+          });
 
-onMount(async () => {
-	const interval = setInterval(async () => {
-		try {
-			if (wallet.isConnected) {
-				const balance = await readContract(wallet.config, {
-					address: RMT,
-					abi: IERC20_ABI,
-					functionName: "balanceOf",
-					args: ["0x3c7e48216C74D7818aB1Fd226e56C60C4D659bA6"],
-				});
+          console.log("Balance");
+          console.log(balance);
 
-				if (balance >= 1) {
-					isExchanged = true;
-				}
-				const allowance = await readContract(wallet.config, {
-					address: RMT,
-					abi: IERC20_ABI,
-					functionName: "allowance",
-					args: [wallet.address, BROKER],
-				});
-				if (allowance == 1) {
-					isApproved = true;
-				}
-			}
-		} catch (e) {
-			console.log(e);
-		}
-	}, 1000);
-	return () => clearInterval(interval);
-});
+          // const balance = await readContract(wallet.config, {
+          //   address: RMT,
+          //   abi: IERC20_ABI,
+          //   functionName: "balanceOf",
+          //   args: ["0x3c7e48216C74D7818aB1Fd226e56C60C4D659bA6"],
+          // });
 
-const approve = async () => {
-	isApproving = true;
+          // if (balance >= 1) {
+          //   isExchanged = true;
+          // }
+          // const allowance = await readContract(wallet.config, {
+          //   address: RMT,
+          //   abi: IERC20_ABI,
+          //   functionName: "allowance",
+          //   args: [wallet.address, BROKER],
+          // });
+          // if (allowance == 1) {
+          //   isApproved = true;
+          // }
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    }, 1000);
+    return () => clearInterval(interval);
+  });
 
-	try {
-		const tx = await writeContract(wallet.config, {
-			address: RMT,
-			abi: IERC20_ABI,
-			functionName: "approve",
-			args: [BROKER, 1],
-		});
+  const approve = async () => {
+    isApproving = true;
 
-		await waitForTransactionReceipt(wallet.config, {
-			hash: tx,
-		});
+    try {
+      const tx = await writeContract(wallet.config, {
+        address: RMT,
+        abi: IERC20_ABI,
+        functionName: "approve",
+        args: [BROKER, 1],
+      });
 
-		isApproved = true;
-	} catch (error) {
-		console.error(error);
-	}
+      await waitForTransactionReceipt(wallet.config, {
+        hash: tx,
+      });
 
-	isApproving = false;
-};
+      isApproved = true;
+    } catch (error) {
+      console.error(error);
+    }
 
-const exchange = async () => {
-	isExchanging = true;
+    isApproving = false;
+  };
 
-	try {
-		const tx = await writeContract(wallet.config, {
-			address: BROKER,
-			abi: BROKER_ABI,
-			functionName: "redeem",
-			args: [],
-		});
+  const exchange = async () => {
+    isExchanging = true;
 
-		await waitForTransactionReceipt(wallet.config, {
-			hash: tx,
-		});
+    try {
+      const tx = await writeContract(wallet.config, {
+        address: BROKER,
+        abi: BROKER_ABI,
+        functionName: "redeem",
+        args: [],
+      });
 
-		isExchanged = true;
-	} catch (error) {
-		console.error(error);
-	}
+      await waitForTransactionReceipt(wallet.config, {
+        hash: tx,
+      });
 
-	isExchanging = false;
-};
+      isExchanged = true;
+    } catch (error) {
+      console.error(error);
+    }
+
+    isExchanging = false;
+  };
+  const claim = async () => {
+    try {
+      fetch(
+        "https://university-dapp.vercel.app/api/faucet?address=" +
+          wallet.address,
+      );
+
+      toast.success("ETH claimed ... please wait a minute or two !");
+    } catch (error) {
+      toast.error("There has been an issue. Refresh and retry !");
+    }
+  };
 </script>
 
 <section>
-  {#if isExchanged}
-    <p>
-      The exchange is now done. Thanks for being here from the start, brother.
-    </p>
+  {#if !wallet.isConnected}
+    <p>Please connect your wallet.</p>
+  {:else if !balance}
+    <p>Waiting for data to be fetched from the blockchain.</p>
   {:else}
-    <p>
-      This webpage is intended to proceed to the exchange of the Ready-Made
-      Token for the exact amount of 1.7 ETH.
-    </p>
-    <p>
-      The contract handling this exchange can be found <a
-        href="https://etherscan.io/address/{BROKER}"
-        target="_blank">here</a
-      >.
-    </p>
+    <p>You own {balance.formatted} ETH</p>
+    {#if balance.value > 50000000000000000n}
+      <p>
+        That's enough to play. Head to the <a href="/governance">governance</a> page
+        to vote on proposals.
+      </p>
+    {:else}
+      <p>
+        You need more to play. Click on the button below and wait until the
+        transaction is validated refreshes.
+      </p>
+      <div class="action">
+        <Button on:click={claim}>Claim ETH</Button>
+      </div>
+    {/if}
   {/if}
 </section>
 
-{#if !wallet.isConnected}
-  <section><p>To proceed, please connect your wallet.</p></section>
-{:else if !isExchanged}
-  <hr />
-  <section class={isApproved ? "disabled" : ""}>
-    <h2>1. approve</h2>
-    <p>
-      <small>
-        {#if !isApproved}
-          You need you to approve our smart contract to transfer the RMT.
-        {:else}
-          Our smart contract is approved to transfer the RMT.
-        {/if}
-      </small>
-    </p>
-    <section>
-      <Button
-        on:click={approve}
-        loading={isApproving ? true : false}
-        disabled={isApproved || isApproving ? true : false}
-      >
-        approve
-      </Button>
-    </section>
-  </section>
-  <hr />
-  <section class={!isApproved ? "disabled" : ""}>
-    <h2>2. exchange</h2>
-    <p>
-      <small>
-        {#if !isApproved}
-          You need you to approve our smart contract before we can exchange the
-          RMT.
-        {:else}
-          You can now exchange the RMT against 1.7 ETH.
-        {/if}
-      </small>
-    </p>
-    <section>
-      <Button
-        on:click={exchange}
-        loading={isExchanging ? true : false}
-        disabled={!isApproved ? true : false}
-      >
-        exchange
-      </Button>
-    </section>
-  </section>
-{/if}
-
 <style>
+  .action {
+    margin-top: var(--space-md);
+  }
 </style>

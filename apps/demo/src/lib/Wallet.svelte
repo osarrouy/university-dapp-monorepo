@@ -1,36 +1,36 @@
 <script>
-import { initialize, wallet } from "$lib/wallet.svelte.js";
-import { mainnet } from "@reown/appkit/networks";
-import { onMount } from "svelte";
+  import { initialize, wallet } from "$lib/wallet.svelte.js";
+  import { mainnet } from "@reown/appkit/networks";
+  import { onMount } from "svelte";
 
-export const networks = [mainnet];
+  let { networks = [mainnet] } = $props();
 
-onMount(() => {
-	initialize(networks);
-});
+  onMount(() => {
+    initialize(networks);
+  });
 
-const shorten = (address) => {
-	const regex = /^(0x[a-zA-Z0-9]{4})[a-zA-Z0-9]+([a-zA-Z0-9]{4})$/;
-	const match = address.match(regex);
-	if (!match) return address;
-	return `${match[1]}…${match[2]}`;
-};
+  const shorten = (address) => {
+    const regex = /^(0x[a-zA-Z0-9]{4})[a-zA-Z0-9]+([a-zA-Z0-9]{4})$/;
+    const match = address.match(regex);
+    if (!match) return address;
+    return `${match[1]}…${match[2]}`;
+  };
 
-const openModal = () => {
-	wallet.kit()?.open();
-};
+  const openModal = () => {
+    wallet.kit()?.open();
+  };
 </script>
 
-<button class="framed" on:click={openModal}>
-	{#if wallet.isConnected}
-		{shorten(wallet.address)}
-	{:else}
-		CONNECT
-	{/if}
+<button class="framed" onclick={openModal}>
+  {#if wallet.isConnected}
+    {shorten(wallet.address)}
+  {:else}
+    CONNECT
+  {/if}
 </button>
 
 <style>
-	button {
-		margin-left: var(--space-sm);
-	}
+  button {
+    margin-left: var(--space-sm);
+  }
 </style>

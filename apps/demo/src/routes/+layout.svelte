@@ -2,8 +2,8 @@
   import "@distributedgallery/ui/styles/reset.css";
   import "@distributedgallery/ui/styles/fonts.css";
   import "@distributedgallery/ui/styles/app.css";
-  import { Header } from "@distributedgallery/ui";
-
+  import { Header } from "$lib";
+  import toast, { Toaster } from "svelte-french-toast";
   // import '$lib/styles/reset.css';
   // import '$lib/styles/fonts.css';
   // import '$lib/styles/app.css';
@@ -15,11 +15,12 @@
 </svelte:head>
 
 <div class="app">
+  <Toaster></Toaster>
   <Header
-    title="rmt"
+    title="dapp"
     nav={[
-      { label: "redeem", url: "/" },
-      { label: "about", url: "/about" },
+      { label: "Claim", url: "/" },
+      { label: "Governance", url: "/governance" },
     ]}
   ></Header>
   <main class="framed">
