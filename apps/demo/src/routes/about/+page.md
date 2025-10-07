@@ -1,0 +1,3 @@
+# Ready-Made Token
+
+The ready-made token is the first artwork of the distributed gallery, created in december 2017. It consists in a one-unit crypto-token sold through an auction on the Ethereum blockchain. With this first artwork, the distributed gallery has pushed the logic of appropriation to its limit by elevating a liquid commodity to the status of artwork through the signature of the figurehead of appropriation art: Richard Prince. This artwork has received a lot of attention because of the many controversies and questions it has raised about the relationship between the art world and the art market.

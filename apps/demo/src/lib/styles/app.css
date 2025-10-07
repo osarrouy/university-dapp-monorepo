@@ -1,0 +1,178 @@
+:root {
+	--black: #000000;
+	--black-subtle: #202020;
+	--grey: #666666;
+	--white: #ffffff;
+	--pink: #ff00c3;
+
+	--font-size: 14px;
+	--font-weight: 200;
+	--line-height: 1.8em;
+
+	--space-sm: 0.5rem;
+	--space-md: 1rem;
+	--space-lg: 3rem;
+
+	--background: var(--black);
+	--foreground: var(--white);
+	--background-subtle: var(--black-subtle);
+	--foreground-subtle: var(--grey);
+	--accent: var(--pink);
+	--accent-subtle: rgba(255, 28, 206, 0.4);
+}
+
+body,
+html {
+	background-color: var(--background);
+	color: var(--foreground);
+	font-family: "IBM Plex Mono", monospace;
+	font-size: var(--font-size);
+	font-weight: var(--font-weight);
+	line-height: var(--line-height);
+}
+
+.app {
+	margin: 0 auto;
+	padding: var(--space-sm);
+	max-width: calc(1024px + 2 * var(--space-sm));
+}
+
+section {
+	margin-top: var(--space-md);
+	margin-bottom: var(--space-md);
+
+	&:first-child {
+		margin-top: 0;
+	}
+
+	&:last-of-type {
+		margin-bottom: 0;
+	}
+}
+
+p {
+	margin: var(--space-sm) 0;
+
+	&:first-child {
+		margin-top: 0;
+	}
+
+	&:last-of-type {
+		margin-bottom: 0;
+	}
+}
+
+a:not(header *) {
+	text-decoration: underline;
+	text-decoration-thickness: 0.5px;
+
+	&:hover {
+		text-decoration-color: var(--accent);
+	}
+}
+
+h1:not(header *),
+h2:not(header *),
+h3:not(header *),
+h4:not(header *),
+h5:not(header *),
+h6:not(header *) {
+	margin-bottom: var(--space-sm);
+	text-transform: uppercase;
+	position: relative;
+	text-decoration: underline;
+	text-decoration-color: var(--accent);
+	text-decoration-line: blink;
+	text-decoration-thickness: 1px;
+	width: fit-content;
+
+	&:before {
+		content: "";
+		display: inline-block;
+		color: var(--accent);
+		margin-right: var(--space-sm);
+		position: relative;
+		top: 0;
+		left: 0;
+	}
+}
+
+h1:not(header *) {
+	&:before {
+		content: "#";
+	}
+}
+
+h2:not(header *) {
+	&:before {
+		content: "##";
+	}
+}
+
+h3:not(header *) {
+	&:before {
+		content: "###";
+	}
+}
+
+button {
+	background:
+		linear-gradient(to right, var(--foreground-subtle), 0.5px, transparent 1px) 0 0,
+		linear-gradient(to right, var(--foreground-subtle), 0.5px, transparent 1px) 0 100%,
+		linear-gradient(to left, var(--foreground-subtle), 0.5px, transparent 1px) 100% 0,
+		linear-gradient(to left, var(--foreground-subtle), 0.5px, transparent 1px) 100% 100%,
+		linear-gradient(to bottom, var(--foreground-subtle), 0.5px, transparent 1px) 0 0,
+		linear-gradient(to bottom, var(--foreground-subtle), 0.5px, transparent 1px) 100% 0,
+		linear-gradient(to top, var(--foreground-subtle), 0.5px, transparent 1px) 0 100%,
+		linear-gradient(to top, var(--foreground-subtle), 0.5px, transparent 1px) 100% 100%;
+	background-repeat: no-repeat;
+	background-size: var(--space-sm) var(--space-sm);
+	font-size: 0.85em;
+	padding: var(--space-sm);
+	padding: var(--space-sm) var(--space-sm);
+	position: relative;
+
+	&:hover {
+		cursor: pointer;
+		background-color: var(--background-subtle);
+	}
+
+	&:disabled {
+		color: var(--foreground-subtle);
+
+		&:hover {
+			cursor: not-allowed;
+			background-color: var(--background);
+		}
+	}
+}
+
+hr {
+	border: none;
+	border-bottom: 1px dashed var(--background-subtle);
+}
+
+small {
+	font-style: italic;
+	font-size: 0.95em;
+}
+
+.framed {
+	background:
+		linear-gradient(to right, var(--accent), 0.5px, transparent 1px) 0 0,
+		linear-gradient(to right, var(--accent), 0.5px, transparent 1px) 0 100%,
+		linear-gradient(to left, var(--accent), 0.5px, transparent 1px) 100% 0,
+		linear-gradient(to left, var(--accent), 0.5px, transparent 1px) 100% 100%,
+		linear-gradient(to bottom, var(--accent), 0.5px, transparent 1px) 0 0,
+		linear-gradient(to bottom, var(--accent), 0.5px, transparent 1px) 100% 0,
+		linear-gradient(to top, var(--accent), 0.5px, transparent 1px) 0 100%,
+		linear-gradient(to top, var(--accent), 0.5px, transparent 1px) 100% 100%;
+	background-repeat: no-repeat;
+	background-size: var(--space-sm) var(--space-sm);
+	border: 1px dashed var(--black-subtle);
+	padding: var(--space-sm);
+}
+
+.disabled {
+	color: var(--foreground-subtle);
+}
