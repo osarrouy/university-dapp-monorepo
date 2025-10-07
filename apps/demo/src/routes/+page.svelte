@@ -100,7 +100,7 @@
     <p>Waiting for data to be fetched from the blockchain.</p>
   {:else}
     <p>You own {balance.formatted} ETH</p>
-    {#if balance.value > 50000000000000000n}
+    {#if balance.value >= 50000000000000000n}
       <p>
         That's enough to play. Head to the <a href="/governance">governance</a> page
         to vote on proposals.
