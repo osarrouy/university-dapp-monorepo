@@ -108,7 +108,7 @@
     {:else}
       <p>
         You need more to play. Click on the button below and wait until the
-        transaction is validated refreshes.
+        transaction is validated.
       </p>
       <div class="action">
         <Button on:click={claim}>Claim ETH</Button>

@@ -9,10 +9,13 @@
   } from "@wagmi/core";
   import toast from "svelte-french-toast";
 
+  import { onMount } from "svelte";
+
   const ADDRESS = "0x7Ab0e641ED98A4FCf7c4EF7F61919042DDdc7f1D";
 
   let loaded = $state(false);
   let proposals = $state([]);
+  let tx = $state(null);
 
   $effect(async () => {
     if (wallet.isConnected) {
@@ -20,7 +23,37 @@
     }
   });
 
+  $effect(async () => {
+    if (tx) {
+      toast.promise(
+        waitForTransactionReceipt(wallet.config, {
+          hash: tx,
+        }),
+        {
+          loading:
+            "Waiting for your transaction to be processed by the blockchain",
+          success: "Vote processed by the blockchain",
+          error: "Error processing your vote",
+        },
+      );
+    }
+  });
+
+  onMount(async () => {
+    const interval = setInterval(async () => {
+      try {
+        if (wallet.isConnected) {
+          await fetchProposals();
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    }, 1000);
+    return () => clearInterval(interval);
+  });
+
   const fetchProposals = async () => {
+    let _proposals = [];
     try {
       console.log("» fetching number of proposals");
       const nbOfProposals = await readContract(wallet.config, {
@@ -46,42 +79,27 @@
           args: [i, wallet.address],
         });
 
-        proposals = [
-          ...proposals,
-          {
-            description: proposal[2],
-            yeahs: proposal[3],
-            neahs: proposal[4],
-            hasVoted,
-          },
-        ];
+        proposals[i] = {
+          description: proposal[2],
+          yeahs: proposal[3],
+          neahs: proposal[4],
+          hasVoted,
+        };
       }
-
       loaded = true;
       console.log("» proposals fetched");
-      console.log(proposals);
     } catch (error) {
       console.log(error);
     }
   };
 
   const _vote = async (id, yes) => {
-    const tx = await writeContract(wallet.config, {
+    tx = await writeContract(wallet.config, {
       address: ADDRESS,
       abi: GOVERNANCE_ABI,
       functionName: "vote",
       args: [id, yes],
     });
-    toast.promise(
-      waitForTransactionReceipt(wallet.config, {
-        hash: tx,
-      }),
-      {
-        loading: "Waiting for the blockchain to process your vote",
-        success: "Vote processed by the blockchain",
-        error: "Error processing your vote",
-      },
-    );
   };
 
   const vote = async (id, yes) => {
@@ -90,13 +108,10 @@
       toast.promise(_vote(id, yes), {
         loading: "Confirm transaction in your wallet",
         success: "Vote transmitted to the blockchain",
-        error: "Error during your voting",
+        error: "Something went wrong during your vote",
       });
     } catch (e) {
       console.log(e);
-      proposals[id].hasVoted = false;
-      toast.error("There has been an error.");
-      await fetchProposals();
     }
   };
 </script>
